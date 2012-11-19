@@ -101,15 +101,33 @@ class sirFartUserClass {
 			return false;	
 	}
 	public function getShareLog($id = false, $status = false) {
-		if(!$id && !$status) {
-			$shareLogQuery = "select sh.id, sh.user_id, user.twitter_screen_name, sh.url, sh.title, sh.message, sh.timestamp from sharelog as sh, user where sh.user_id = user.id and user.id in (select followerid from followers where followers.userid = ?) order by sh.id DESC;";
-			$shareLogQueryPreparedStatementBindsArray = array(1 => $this->user_id); 
+		if(!$id) {
+			if($status == "all") {
+				$shareLogQuery = "select sh.id, sh.user_id, user.twitter_screen_name, sh.url, sh.title, sh.message, sh.timestamp from sharelog as sh, user where sh.user_id = user.id order by sh.id DESC limit 20;";
+				$this->databaseConnection->queryDatabaseWithoutBinds($shareLogQuery);
+				while($row = $this->databaseConnection->getQueryRow()) {	
+					$shareLog[] = array (
+						"id" => $row['id'],
+						"user_id" => $row['user_id'],
+						"twitter_screen_name" => $row['twitter_screen_name'],
+						"url" => $row['url'],
+						"host" => $this->getHostForSharedUrl($row['url']),
+						"title" => $row['title'],
+						"message" => $row['message'],
+						"timestamp" => $row['timestamp']
+						);				
+				}
+				return $shareLog;				
+			} else {			
+				$shareLogQuery = "select sh.id, sh.user_id, user.twitter_screen_name, sh.url, sh.title, sh.message, sh.timestamp from sharelog as sh, user where sh.user_id = user.id and user.id in (select followerid from followers where followers.userid = ?) order by sh.id DESC limit 20;";
+				$shareLogQueryPreparedStatementBindsArray = array(1 => $this->user_id);
+			}
 		} else {
 			if($status == "olderThan") {
-				$shareLogQuery = "select sh.id, sh.user_id, user.twitter_screen_name, sh.url, sh.title, sh.message, sh.timestamp from sharelog as sh, user where sh.user_id = user.id and user.id in (select followerid from followers where followers.userid = ?) and sh.id < ? order by sh.id DESC;";
+				$shareLogQuery = "select sh.id, sh.user_id, user.twitter_screen_name, sh.url, sh.title, sh.message, sh.timestamp from sharelog as sh, user where sh.user_id = user.id and user.id in (select followerid from followers where followers.userid = ?) and sh.id < ? order by sh.id DESC limit 20;";
 			}
 			if($status == "newerThan") {
-				$shareLogQuery = "select sh.id, sh.user_id, user.twitter_screen_name, sh.url, sh.title, sh.message, sh.timestamp from sharelog as sh, user where sh.user_id = user.id and user.id in (select followerid from followers where followers.userid = ?) and sh.id > ? order by sh.id DESC;";
+				$shareLogQuery = "select sh.id, sh.user_id, user.twitter_screen_name, sh.url, sh.title, sh.message, sh.timestamp from sharelog as sh, user where sh.user_id = user.id and user.id in (select followerid from followers where followers.userid = ?) and sh.id > ? order by sh.id DESC limit 20;";
 			}
 			$shareLogQueryPreparedStatementBindsArray = array(1=>$this->user_id, 2=>$id);
 		}

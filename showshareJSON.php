@@ -14,8 +14,10 @@ if($user->verifyUserAccount()) {
 	header('Content-type: application/json');
 	if(isset($_GET['id']) && isset($_GET['status'])) {
 		echo json_encode($user->getshareLog($_GET['id'], $_GET['status']));
-	} else {	
-		echo json_encode($user->getShareLog());
+	} elseif (!isset($_GET['id']) && isset($_GET['status'])) {	
+		echo json_encode($user->getShareLog(false,$_GET['status']));
+	} else {
+		echo json_encode($user->getshareLog(false, false));
 	}	
 
 }

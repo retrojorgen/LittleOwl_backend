@@ -17,7 +17,6 @@ else {
 		if($user->createUserAccount()) {
 			$user->addFollower(1);
 			$user->addFollower($user->getUserId());
-			$user->addLatestViewed("0");
 		}
 		else {
 			$exitString = 1;

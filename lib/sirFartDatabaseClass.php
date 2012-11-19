@@ -1,4 +1,6 @@
 <?php
+ini_set('display_errors',1); 
+error_reporting(E_ALL);
 class sirFartDatabaseClass {
 	private $databaseConnection = NULL;
 	private $preparedStatement = NULL;
@@ -15,6 +17,11 @@ class sirFartDatabaseClass {
 		$preparedStatement->execute();
 		$this->preparedStatement = $preparedStatement;
 	}
+	public function queryDatabaseWithoutBinds($query) {
+		$preparedStatement = $this->databaseConnection->prepare($query);
+		$preparedStatement->execute();
+		$this->preparedStatement = $preparedStatement;
+	}	
 	public function getQueryRow() {
 		return $this->preparedStatement->fetch();
 	}
