@@ -1,6 +1,4 @@
 <?php
-ini_set('display_errors',1); 
-error_reporting(E_ALL);
 require_once("../config.php");
 require_once("lib/sirFartDatabaseClass.php");
 require_once("lib/sirFartTwitterConnectionClass.php");
@@ -19,12 +17,11 @@ else {
 			$user->addFollower($user->getUserId());
 		}
 		else {
-			$exitString = 1;
+			header("HTTP/1.0 404 Not Found");
 		}
 	}
 	else {
-		$exitString = 2;
+		header("HTTP/1.0 401 Not Found");
 	}
 }
 $dbh->endConnection();
-exit($exitString);
