@@ -28,7 +28,17 @@ if(isset($_COOKIE['twitterauth'])) {
 					header('Content-type: application/json');
 					echo json_encode($followers);
 				}
-				break;		
+				break;
+			case 'addfollower':
+				if(isset($_GET['id'])) {
+					if($user->addFollower($_GET['id'])) {
+					} else {
+						header("HTTP/1.0 404 Not Found");	
+					}
+				} else {
+					header("HTTP/1.0 406 Not Found");
+				}
+				break;							
 			case 'sharelogtodatabase':
 				if(isset($_POST['url']) && isset($_POST['title']) && isset($_POST['message'])) {
 				 	$user->addShare($_POST['url'],$_POST['title'],$_POST['message']);
