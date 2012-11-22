@@ -24,36 +24,47 @@ if(isset($_COOKIE['twitterauth'])) {
 				$followers = $user->getFollowers();
 				if(!$followers) {
 					header("HTTP/1.0 404 Not Found");
-					break;
 				} else {
 					header('Content-type: application/json');
 					echo json_encode($followers);
-					break;
 				}
+				break;		
 			case 'sharelogtodatabase':
 				if(isset($_POST['url']) && isset($_POST['title']) && isset($_POST['message'])) {
 				 	$user->addShare($_POST['url'],$_POST['title'],$_POST['message']);
 				 	header('Content-type: application/json');
 				 	echo json_encode(array("responce" => "Successfully shared.", "new_status" => "Successfully shared."));
-				 	break;
 				}
 				else {
 					header("HTTP/1.0 406 Not Found");
-					break;
 				}
+			 	break;	
+			case 'getusercredentials':
+				header('Content-type: application/json');
+				echo json_encode($user->getUserCredentials());
+				break;
+			case 'deleteusershare':
+				if(isset($_GET['id'])) {					
+					if($user->deleteShare($_GET['id'])) {
+						header('Content-type: application/json');
+					} else {
+						header("HTTP/1.0 404 Not Found");
+					}
+				} else {
+					header("HTTP/1.0 406 Not Found");
+				}	
+				break;
 			case 'followertodatabase':
 				$followerid = $_GET['follower'];
 				$follow = $_GET['follow'];
 				header('Content-type: application/json');
 					if($follow == "Follow") {
 						$user->addFollower($followerid);
-						$exitString['responce'] = "Added follower";
-						$exitString['new_status'] = "following";
+						echo json_encode(array("responce" => "Added follower", "new_status" => "following"));
 					}
-					if($follow == "unFollow") {
+					if($follow == "unfollow") {
 						$user->removeFollower($followerid);
-						$exitString['responce'] = "Removed follower";
-						$exitString['new_status'] = "notFollowing";
+						echo json_encode(array("responce" => "Removed follower", "new_status" => "notFollowing"));
 					}
 				break;				
 			default:
@@ -65,9 +76,14 @@ if(isset($_COOKIE['twitterauth'])) {
 	}
 } else {
 	if(isset($_GET['type'])) {
-		switch ('$_GET['type']') {
+		switch ($_GET['type']) {
 			case 'authenticationredirect':
-			header("location: process.php");
+			if(isset($_GET['callbackurl'])) {
+				$callbackurl = "location: " . $_GET['callbackurl'];
+			} else {
+				$callbackurl = "location: process.php";
+			}
+			header($callbackurl);
 			break;
 		}		
 	}

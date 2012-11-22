@@ -52,8 +52,8 @@ if (isset($_REQUEST['oauth_token']) && $_SESSION['token']  !== $_REQUEST['oauth_
 
 	//fresh authentication
 	$connection = new TwitterOAuth(CONSUMER_KEY, CONSUMER_SECRET);
-	if($_GET['callbackUrl']) {
-		$callbackUrl = $_GET['callbackUrl']
+	if($_GET['callbackurl']) {
+		$callbackUrl = $_GET['callbackurl']
 	} else {
 		$callbackUrl = OAUTH_CALLBACK;
 	}

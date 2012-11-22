@@ -20,6 +20,10 @@ class sirFartUserClass {
 		}
 		return false;
 	}
+	public function getUserCredentials() {
+		$this->setTwitterCrendentials();
+		return array("user_id" => $this->user_id);
+	}
 	public function addShare($url, $title, $message) {
 		$this->databaseConnection->queryDatabaseWithBinds("
 		INSERT 
@@ -146,7 +150,25 @@ class sirFartUserClass {
 		}
 		return $shareLog;	
 	}
-		
+	public function deleteShare($share_id) {
+		$shareLogQuery = "select id from sharelog where id = :share_id and user_id = :user_id limit 1;";
+		$shareLogQueryPreparedStatementBindsArray = array("share_id" => $share_id, ":user_id" => $this->user_id);
+		$this->databaseConnection->queryDatabaseWithBinds($shareLogQuery,$shareLogQueryPreparedStatementBindsArray);
+		if($row = $this->databaseConnection->getQueryRow()) {
+			$this->databaseConnection->queryDatabaseWithBinds("
+			DELETE
+			from 
+			sharelog
+			where
+			id = :share_id
+			and
+			user_id = :user_id;", 
+			array(":share_id" => $share_id, ":user_id" => $this->user_id));
+			$this->databaseConnection->queryDatabaseWithBinds($shareLogQuery,$shareLogQueryPreparedStatementBindsArray);
+			return true;
+		}
+		return false;
+	}		
 	public function addFollower($follower_user_id) {
 		$this->databaseConnection->queryDatabaseWithBinds("
 		INSERT INTO 
